@@ -2,6 +2,36 @@
 
 This is a simple backend service designed to handle transaction webhooks. It receives transaction data, saves it to a database, and processes it in the background so the sender gets a quick response.
 
+**Live Deployment:** [https://walnutfolks-assignment-backend.onrender.com/](https://walnutfolks-assignment-backend.onrender.com/)
+
+> **Note:** Since this is hosted on a Render free instance, the service may spin down when inactive. Please expect a delay of up to 50 seconds for the first request while the service restarts.
+
+## System Behavior
+*   **Fast Response:** The API acknowledges webhooks immediately (within 500ms) with a `202 Accepted` status.
+*   **Background Processing:** Actual processing happens in the background with a simulated **30-second delay**.
+*   **Idempotency:** Duplicate webhooks for the same `transaction_id` are safely ignored.
+
+## How to Test
+
+### 1. Send a Webhook
+**Endpoint:** `POST /v1/webhooks/transactions`
+**Body:**
+```json
+{
+  "transaction_id": "txn_test_123",
+  "source_account": "acc_source",
+  "destination_account": "acc_dest",
+  "amount": 100.0,
+  "currency": "USD"
+}
+```
+
+### 2. Check Status
+**Endpoint:** `GET /v1/transactions/txn_test_123`
+
+*   **Before 30s:** Returns `{"status": "PROCESSING", ...}`
+*   **After 30s:** Returns `{"status": "PROCESSED", ...}`
+
 ## Setup and Running
 
 1.  **Environment Setup**
